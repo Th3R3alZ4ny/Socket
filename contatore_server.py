@@ -11,7 +11,6 @@ with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
     clientsocket,address=s.accept()
     contatore=0
     with clientsocket as cs:
-       
         while True:
             contatore=contatore+1
             data=cs.recv(1024)
