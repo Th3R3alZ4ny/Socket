@@ -21,8 +21,8 @@ def invia_comandi(sock_service):
         print("Risultato: ", data.decode())
 def connessione_server(address,port):
     sock_service = socket.socket()
-    sock_service.connect((address, port))
+    sock_service.connect((address, port)) #con la funzione connect() ci colleghiamo al server del quale specifichiamo indirizzo e porta
     print("Connesso a " + str((address, port)))
-    invia_comandi(sock_service)
-if _name=='main_':
+    invia_comandi(sock_service) #chiamiamo la funzione invia_comandi()
+if _name=='main_': #eseguiamo connessione_server() solo se il nome corrisponde a "__main__"
     connessione_server(HOST,PORT)
