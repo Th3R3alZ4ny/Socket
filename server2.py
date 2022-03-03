@@ -39,7 +39,7 @@ def ricevi_connessioni(sock_listen):
         print("\nConnessione ricevuta da " + str(addr_client))
         print("\nCreo un thread per servire le richieste")
         try:
-            Thread(target=ricevi_comandi, args=(sock_service, addr_client)).start() #facciamo partire il thread, facendogli eseguire la funzione ricevi_comandi() e passando come argomenti il socket e indirizzo del client
+            Thread(target=ricevi_comandi(sock_service,addr_client)) #facciamo partire il thread, facendogli eseguire la funzione ricevi_comandi() e passando come argomenti il socket e indirizzo del client
         except:
             print("Il thread non si avvia")
             sock_listen.close() #in caso di errore chiudiamo la connessione
@@ -50,5 +50,5 @@ def avvia_server(HOST,PORT):
     sock_listen.listen(5)
     print("Server in ascolto su %s." % str((HOST, PORT)))
     ricevi_connessioni(sock_listen) #chiamiamo la funzione ricevi_connessioni()
-if _name=='main_': #chiama la funzione avvia_server solo se il nome è "__main__"
+if __name__=='__main__': #chiama la funzione avvia_server solo se il nome è "__main__"
     avvia_server(HOST,PORT)
