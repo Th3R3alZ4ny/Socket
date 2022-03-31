@@ -83,7 +83,34 @@ def ricevi_comandi3(sock_service,addr_client):
   #....
   #1.recuperare dal json il tabellone
   #2. restituire per ogni studente la media dei voti e somma delle assenze :
-  pass
+  print("Avviato")
+  while True:
+      data=sock_service.recv(1024)
+      if not data:
+          break
+      data=data.decode()
+      data=json.loads(data)  
+  #1.recuperare dal json studente e pagella
+      tabellone=[]
+      for stud in data:
+          pagella=data[stud]
+          assenze=0
+          media=0
+          for i,elenco in enumerate(pagella):
+            media+=elenco[1]
+            assenze+=elenco[2]
+  #2. restituire studente, media dei voti e somma delle assenze :
+          media=media/i
+          messaggio={
+              'studente':stud,
+              'media':media,
+              'assenze':assenze
+          }
+          tabellone.append(messaggio)
+      messaggio=tabellone
+      messaggio=json.dumps(messaggio)
+      sock_service.sendall(messaggio.encode("UTF-8"))
+      sock_service.close()
 
 
 def ricevi_connessioni(sock_listen):

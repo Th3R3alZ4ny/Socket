@@ -113,9 +113,38 @@ def genera_richieste3(num,address,port):
   #   esempio: tabellone={"Cognome1":[("Matematica",8,1), ("Italiano",6,1), ("Inglese",9,3), ("Storia",8,2), ("Geografia",8,1)],
   #                       "Cognome2":[("Matematica",7,2), ("Italiano",5,3), ("Inglese",4,12), ("Storia",5,2), ("Geografia",4,1)],
   #                        .....}
+    try:
+        s=socket.socket()
+        s.connect((address,port))
+        print(f"\n{threading.current_thread().name} {num+1}) Connessione al server: {address}:{port}")
+    except:
+        print(f"{threading.current_thread().name} Qualcosa è andato storto, sto uscendo... \n")
+        sys.exit()
+    
   #2. comporre il messaggio, inviarlo come json
+    studenti=['Zaniolo','Rossi','Bianchi','Verdi','Colombo']
+    materie=['Matematica','Italiano','Inglese','Storia','Geografia']
+    tabellone={}
+    for stud in studenti:
+        pagella=[]
+        for m in materie:
+            voto=random.randint(1,10)
+            assenze=random.randint(1,5)
+            pagella.append((m,voto,assenze))
+        tabellone[stud]=pagella
+    print("Dati inviati al server")
+    tabellone=json.dumps(tabellone)
+    s.sendall(tabellone.encode("UTF-8"))
   #3  ricevere il risultato come json e stampare l'output come indicato in CONSOLE CLIENT V.3
-  pass
+    data=s.recv(1024)
+    data=data.decode()
+    data=json.load(data)
+    if not data:
+        print(f"{threading.current_thread().name}: Server non risponde. Exit")
+    else:
+        for elemento in data:
+           print(f"{threading.current_thread().name}: Risultato: Lo studente {elemento['studente']} ha una media di {elemento['media']} e {elemento['assenze']} assenze") # trasforma il vettore di byte in stringa
+    s.close()
 
 if __name__ == '__main__':
     start_time=time.time()
@@ -148,5 +177,11 @@ if __name__ == '__main__':
     # PUNTO C) ciclo per chiamare NUM_WORKERS volte la funzione genera richieste (1,2,3) 
     # tramite l'avvio di un processo al quale passo i parametri args=(num,SERVER_ADDRESS, SERVER_PORT,)
     # avviare tutti i processi e attenderne la fine
+    for i in range(NUM_WORKERS):
+        process.append(multiprocessing.Process(target=genera_richieste1, args=(i,SERVER_ADDRESS,SERVER_PORT)))
+        #process.append(multiprocessing.Process(target=genera_richieste2, args=(i,SERVER_ADDRESS,SERVER_PORT)))
+        #process.append(multiprocessing.Process(target=genera_richieste3, args=(i,SERVER_ADDRESS,SERVER_PORT)))
+    [process.start() for process in process]
+    [process.join() for process in process]
     end_time=time.time()
     print("Total PROCESS time= ", end_time - start_time)
